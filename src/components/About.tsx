@@ -42,7 +42,7 @@ export default function About() {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         headingRef.current,
-        { y: 80, opacity: 0 },
+        { y: 60, opacity: 0 },
         {
           y: 0,
           opacity: 1,
@@ -59,11 +59,11 @@ export default function About() {
       if (expRef.current) {
         gsap.fromTo(
           expRef.current.querySelectorAll(".exp-item"),
-          { x: -40, opacity: 0 },
+          { x: -30, opacity: 0 },
           {
             x: 0,
             opacity: 1,
-            stagger: 0.15,
+            stagger: 0.12,
             duration: 0.8,
             ease: "power3.out",
             scrollTrigger: {
@@ -82,8 +82,8 @@ export default function About() {
           { width: "0%" },
           {
             width: (i: number) => `${skills[i].level}%`,
-            stagger: 0.1,
-            duration: 1.5,
+            stagger: 0.08,
+            duration: 1.2,
             ease: "power3.out",
             scrollTrigger: {
               trigger: skillsRef.current,
@@ -97,12 +97,11 @@ export default function About() {
       if (statsRef.current) {
         gsap.fromTo(
           statsRef.current.querySelectorAll(".stat-item"),
-          { y: 40, opacity: 0, scale: 0.9 },
+          { y: 30, opacity: 0 },
           {
             y: 0,
             opacity: 1,
-            scale: 1,
-            stagger: 0.2,
+            stagger: 0.15,
             duration: 0.8,
             ease: "power3.out",
             scrollTrigger: {
@@ -156,9 +155,7 @@ export default function About() {
                   className="exp-item flex flex-col sm:flex-row sm:items-center justify-between py-6 border-b border-white/5 group hover:border-white/10 transition-colors"
                 >
                   <div>
-                    <p className="text-white font-medium group-hover:text-white transition-colors">
-                      {exp.role}
-                    </p>
+                    <p className="text-white font-medium">{exp.role}</p>
                     <p className="text-white/40 text-sm mt-1">{exp.company}</p>
                   </div>
                   <span className="text-white/30 text-sm font-mono mt-2 sm:mt-0">

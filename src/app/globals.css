@@ -19,12 +19,6 @@
     --gradient-3: linear-gradient(135deg, #06b6d4 0%, #7c3aed 50%, #f43f5e 100%);
   }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
   html {
     scroll-behavior: smooth;
   }

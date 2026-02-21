@@ -42,17 +42,37 @@ const services = [
 export default function Services() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Label slide in from left
+      gsap.fromTo(
+        labelRef.current,
+        { x: -60, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: labelRef.current,
+            start: "top 90%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+
+      // Heading text reveal with clip-path
       gsap.fromTo(
         headingRef.current,
-        { y: 80, opacity: 0 },
+        { clipPath: "inset(0 0 100% 0)", y: 40 },
         {
+          clipPath: "inset(0 0 0% 0)",
           y: 0,
-          opacity: 1,
-          duration: 1,
+          duration: 1.2,
           ease: "power3.out",
           scrollTrigger: {
             trigger: headingRef.current,
@@ -62,24 +82,72 @@ export default function Services() {
         }
       );
 
+      // Decorative line grows
+      gsap.fromTo(
+        lineRef.current,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: lineRef.current,
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+
       if (cardsRef.current) {
         const cards = cardsRef.current.querySelectorAll(".service-card");
-        gsap.fromTo(
-          cards,
-          { y: 60, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            stagger: 0.12,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: cardsRef.current,
-              start: "top 80%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
+        cards.forEach((card, i) => {
+          // Each card slides up with a slight rotation
+          gsap.fromTo(
+            card,
+            { y: 80, opacity: 0, rotateX: -10 },
+            {
+              y: 0,
+              opacity: 1,
+              rotateX: 0,
+              duration: 0.8,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 90%",
+                toggleActions: "play none none none",
+              },
+              delay: i * 0.05,
+            }
+          );
+
+          // Hover tilt effect
+          const cardEl = card as HTMLElement;
+          const handleMouseMove = (e: Event) => {
+            const mouseEvent = e as MouseEvent;
+            const rect = cardEl.getBoundingClientRect();
+            const x = (mouseEvent.clientX - rect.left) / rect.width - 0.5;
+            const y = (mouseEvent.clientY - rect.top) / rect.height - 0.5;
+            gsap.to(cardEl, {
+              rotateY: x * 10,
+              rotateX: -y * 10,
+              duration: 0.3,
+              ease: "power2.out",
+              transformPerspective: 800,
+            });
+          };
+
+          const handleMouseLeave = () => {
+            gsap.to(cardEl, {
+              rotateY: 0,
+              rotateX: 0,
+              duration: 0.5,
+              ease: "elastic.out(1, 0.5)",
+            });
+          };
+
+          cardEl.addEventListener("mousemove", handleMouseMove);
+          cardEl.addEventListener("mouseleave", handleMouseLeave);
+        });
       }
     }, sectionRef);
 
@@ -94,7 +162,7 @@ export default function Services() {
     >
       <div className="max-w-7xl mx-auto">
         <div className="mb-20">
-          <span className="text-sm text-white/40 tracking-widest uppercase mb-4 block">
+          <span ref={labelRef} className="text-sm text-white/40 tracking-widest uppercase mb-4 block">
             What I Do
           </span>
           <h2
@@ -105,6 +173,11 @@ export default function Services() {
             <br />
             <span className="gradient-text">your vision to life.</span>
           </h2>
+          <div
+            ref={lineRef}
+            className="mt-6 h-px w-32 origin-left"
+            style={{ background: "linear-gradient(90deg, #7c3aed, #06b6d4)" }}
+          />
         </div>
 
         <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -112,6 +185,7 @@ export default function Services() {
             <div
               key={service.num}
               className="service-card group p-8 rounded-2xl glass hover:bg-white/5 transition-all duration-500 cursor-default"
+              style={{ transformStyle: "preserve-3d" }}
             >
               <span className="text-sm font-mono gradient-text mb-6 block">
                 {service.num}

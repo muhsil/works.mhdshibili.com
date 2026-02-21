@@ -9,7 +9,7 @@ const floatingImages = [
   { src: "/images/project-beyond.webp", alt: "Beyond Living", top: "5%", right: "8%", w: 200, h: 140, round: false },
   { src: "/images/project-xendou.jpg", alt: "Xendou", bottom: "18%", left: "5%", w: 170, h: 120, round: false },
   { src: "/images/project-blvck.jpg", alt: "Blvck", bottom: "12%", right: "3%", w: 190, h: 130, round: false },
-  { src: "/images/hero.jpg", alt: "Mohammed Shibili", top: "15%", left: "50%", w: 160, h: 160, round: true },
+  { src: "/images/hero.jpg", alt: "Mohammed Shibili", top: "15%", left: "calc(50% - 80px)", w: 160, h: 160, round: true },
 ];
 
 export default function Hero() {

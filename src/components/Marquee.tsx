@@ -17,31 +17,23 @@ export default function Marquee() {
         {
           opacity: 1,
           duration: 1,
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 90%",
-            toggleActions: "play none none none",
-          },
+          scrollTrigger: { trigger: containerRef.current, start: "top 90%", toggleActions: "play none none none" },
         }
       );
     }, containerRef);
-
     return () => ctx.revert();
   }, []);
 
   const text = "Let\u2019s work together \u2022 ";
-  const repeated = text.repeat(10);
+  const repeated = text.repeat(12);
 
   return (
-    <div
-      ref={containerRef}
-      className="py-16 overflow-hidden border-y border-white/5"
-    >
+    <div ref={containerRef} className="py-20 overflow-hidden border-y border-white/5">
       <div className="marquee whitespace-nowrap">
-        <span className="text-5xl sm:text-6xl md:text-7xl font-black text-white/5 tracking-tight">
+        <span className="text-5xl sm:text-6xl md:text-8xl font-black text-white/[0.03] tracking-tight">
           {repeated}
         </span>
-        <span className="text-5xl sm:text-6xl md:text-7xl font-black text-white/5 tracking-tight">
+        <span className="text-5xl sm:text-6xl md:text-8xl font-black text-white/[0.03] tracking-tight">
           {repeated}
         </span>
       </div>

@@ -89,28 +89,5 @@ body {
 }
 
 .marquee {
-  animation: marquee 20s linear infinite;
-}
-
-.project-card {
-  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.project-card:hover {
-  transform: scale(1.02);
-}
-
-.skill-bar {
-  position: relative;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.skill-bar-fill {
-  height: 100%;
-  background: var(--gradient-1);
-  border-radius: 2px;
-  transition: width 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: marquee 30s linear infinite;
 }

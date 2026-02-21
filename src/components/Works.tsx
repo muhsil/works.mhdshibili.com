@@ -40,17 +40,19 @@ const projects = [
 export default function Works() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
-  const projectsRef = useRef<HTMLDivElement>(null);
+  const horizontalRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Heading animation with clip-path reveal
       gsap.fromTo(
         headingRef.current,
-        { y: 80, opacity: 0 },
+        { clipPath: "inset(0 0 100% 0)", y: 60 },
         {
+          clipPath: "inset(0 0 0% 0)",
           y: 0,
-          opacity: 1,
-          duration: 1,
+          duration: 1.2,
           ease: "power3.out",
           scrollTrigger: {
             trigger: headingRef.current,
@@ -60,24 +62,111 @@ export default function Works() {
         }
       );
 
-      if (projectsRef.current) {
-        const cards = projectsRef.current.querySelectorAll(".work-card");
-        cards.forEach((card, i) => {
+      // Horizontal scroll pinning
+      if (horizontalRef.current) {
+        const cards = horizontalRef.current.querySelectorAll(".work-card");
+        const totalWidth = (cards.length - 1) * (window.innerWidth > 768 ? 700 : 340);
+
+        const scrollTween = gsap.to(horizontalRef.current, {
+          x: -totalWidth,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top+=200 top",
+            end: () => `+=${totalWidth + 500}`,
+            pin: true,
+            scrub: 1,
+            anticipatePin: 1,
+          },
+        });
+
+        // Progress bar
+        gsap.to(progressRef.current, {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top+=200 top",
+            end: () => `+=${totalWidth + 500}`,
+            scrub: 1,
+          },
+        });
+
+        // Stagger each card's internal elements as they come into view
+        cards.forEach((card) => {
+          const title = card.querySelector(".work-title");
+          const tags = card.querySelectorAll(".work-tag");
+          const arrow = card.querySelector(".work-arrow");
+          const bigLetter = card.querySelector(".work-big-letter");
+
           gsap.fromTo(
-            card,
-            { y: 100, opacity: 0, scale: 0.95 },
+            title,
+            { y: 40, opacity: 0 },
             {
               y: 0,
               opacity: 1,
-              scale: 1,
-              duration: 1,
+              duration: 0.6,
               ease: "power3.out",
               scrollTrigger: {
                 trigger: card,
-                start: "top 85%",
+                start: "left 80%",
                 toggleActions: "play none none none",
+                containerAnimation: scrollTween,
               },
-              delay: i * 0.05,
+            }
+          );
+
+          gsap.fromTo(
+            tags,
+            { y: 20, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              stagger: 0.05,
+              duration: 0.4,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "left 80%",
+                toggleActions: "play none none none",
+                containerAnimation: scrollTween,
+              },
+              delay: 0.2,
+            }
+          );
+
+          gsap.fromTo(
+            arrow,
+            { scale: 0, rotation: -90 },
+            {
+              scale: 1,
+              rotation: 0,
+              duration: 0.5,
+              ease: "back.out(1.7)",
+              scrollTrigger: {
+                trigger: card,
+                start: "left 80%",
+                toggleActions: "play none none none",
+                containerAnimation: scrollTween,
+              },
+              delay: 0.3,
+            }
+          );
+
+          gsap.fromTo(
+            bigLetter,
+            { scale: 0.5, opacity: 0 },
+            {
+              scale: 1,
+              opacity: 0.05,
+              duration: 0.8,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "left 80%",
+                toggleActions: "play none none none",
+                containerAnimation: scrollTween,
+              },
             }
           );
         });
@@ -91,10 +180,10 @@ export default function Works() {
     <section
       ref={sectionRef}
       id="works"
-      className="relative py-32 px-6"
+      className="relative py-32 px-6 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
-        <div ref={headingRef} className="mb-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div ref={headingRef} className="mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <span className="text-sm text-white/40 tracking-widest uppercase mb-4 block">
               Selected Works
@@ -111,64 +200,75 @@ export default function Works() {
           </p>
         </div>
 
-        <div ref={projectsRef} className="space-y-8">
-          {projects.map((project, index) => (
+        {/* Progress bar */}
+        <div className="mb-8 h-px bg-white/10 relative overflow-hidden">
+          <div
+            ref={progressRef}
+            className="absolute top-0 left-0 h-full w-full origin-left"
+            style={{ background: "linear-gradient(90deg, #7c3aed, #06b6d4)", transform: "scaleX(0)" }}
+          />
+        </div>
+      </div>
+
+      {/* Horizontal scroll container */}
+      <div ref={horizontalRef} className="flex gap-8 pl-6 md:pl-[calc((100vw-80rem)/2+1.5rem)]">
+        {projects.map((project, index) => (
+          <div
+            key={project.title}
+            className="work-card group relative rounded-3xl overflow-hidden cursor-pointer flex-shrink-0 w-[320px] md:w-[660px]"
+            style={{ transformStyle: "preserve-3d" }}
+          >
             <div
-              key={project.title}
-              className="work-card group relative rounded-3xl overflow-hidden cursor-pointer project-card"
+              className={`relative w-full aspect-[4/3] md:aspect-[16/10] bg-gradient-to-br ${project.color} p-6 md:p-10 flex flex-col justify-between`}
             >
-              <div
-                className={`relative w-full aspect-[16/9] md:aspect-[21/9] bg-gradient-to-br ${project.color} p-8 md:p-12 flex flex-col justify-between`}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80 backdrop-blur-sm"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-                      {project.title}
-                    </h3>
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="work-tag px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80 backdrop-blur-sm"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
-                  <span className="text-sm font-mono text-white/40">
-                    0{index + 1}
-                  </span>
+                  <h3 className="work-title text-2xl sm:text-3xl md:text-5xl font-bold text-white">
+                    {project.title}
+                  </h3>
                 </div>
+                <span className="text-sm font-mono text-white/40">
+                  0{index + 1}
+                </span>
+              </div>
 
-                <div className="flex items-end justify-between">
-                  <p className="text-white/60 text-sm md:text-base">
-                    {project.desc}
-                  </p>
-                  <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-white transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
-                    >
-                      <path d="M7 17L17 7M17 7H7M17 7V17" />
-                    </svg>
-                  </div>
-                </div>
-
-                <div className="absolute inset-0 flex items-center justify-center opacity-5">
-                  <span className="text-[20vw] font-black text-white select-none">
-                    {project.title.charAt(0)}
-                  </span>
+              <div className="flex items-end justify-between">
+                <p className="text-white/60 text-sm md:text-base">
+                  {project.desc}
+                </p>
+                <div className="work-arrow w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="text-white transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
+                  >
+                    <path d="M7 17L17 7M17 7H7M17 7V17" />
+                  </svg>
                 </div>
               </div>
+
+              <div className="work-big-letter absolute inset-0 flex items-center justify-center opacity-0">
+                <span className="text-[20vw] font-black text-white select-none">
+                  {project.title.charAt(0)}
+                </span>
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </section>
   );
